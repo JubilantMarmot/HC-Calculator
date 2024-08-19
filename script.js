@@ -22,7 +22,6 @@ function parseExpression(expr) {
     let tokens = expr.match(/[\d\.]+|[+\-*/()^]|sin|cos|tan/g);
     let output = [];
     let operators = [];
-
     const precedence = {'+': 1, '-': 1, '*': 2, '/': 2, '^': 3};
 
     function applyOperator(op, b, a) {
@@ -59,7 +58,7 @@ function parseExpression(expr) {
             while (operators.length && operators[operators.length - 1] !== '(') {
                 output.push(operators.pop());
             }
-            operators.pop(); // Remove the parnetheses
+            operators.pop();
             if (operators.length && ['sin', 'cos', 'tan'].includes(operators[operators.length - 1])) {
                 output.push(operators.pop());
             }
@@ -82,6 +81,10 @@ function parseExpression(expr) {
             let a = stack.pop();
             stack.push(applyOperator(token, b, a));
         }
+    }
+
+    if (stack.length !== 1) {
+        throw new Error('Invalid expression');
     }
 
     return stack[0];
