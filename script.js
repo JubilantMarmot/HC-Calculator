@@ -19,11 +19,11 @@ function calculate() {
 }
 
 function parseExpression(expr) {
-    let tokens = expr.match(/\d+|\D+/g);
+    let tokens = expr.match(/[\d\.]+|[+\-*/()^]|sin|cos|tan/g);
     let output = [];
     let operators = [];
 
-    const precedence = {'+': 1, '-': 1, '*': 2, '/': 2};
+    const precedence = {'+': 1, '-': 1, '*': 2, '/': 2, '^': 3};
 
     function applyOperator(op, b, a) {
         switch (op) {
@@ -31,17 +31,38 @@ function parseExpression(expr) {
             case '-': return a - b;
             case '*': return a * b;
             case '/': return a / b;
+            case '^': return Math.pow(a, b);
+        }
+    }
+
+    function evaluateFunction(func, value) {
+        switch (func) {
+            case 'sin': return Math.sin(value);
+            case 'cos': return Math.cos(value);
+            case 'tan': return Math.tan(value);
         }
     }
 
     for (let token of tokens) {
         if (!isNaN(token)) {
             output.push(parseFloat(token));
-        } else if (['+', '-', '*', '/'].includes(token)) {
+        } else if (['+', '-', '*', '/', '^'].includes(token)) {
             while (operators.length && precedence[operators[operators.length - 1]] >= precedence[token]) {
                 output.push(operators.pop());
             }
             operators.push(token);
+        } else if (['sin', 'cos', 'tan'].includes(token)) {
+            operators.push(token);
+        } else if (token === '(') {
+            operators.push(token);
+        } else if (token === ')') {
+            while (operators.length && operators[operators.length - 1] !== '(') {
+                output.push(operators.pop());
+            }
+            operators.pop(); // Remove the parnetheses
+            if (operators.length && ['sin', 'cos', 'tan'].includes(operators[operators.length - 1])) {
+                output.push(operators.pop());
+            }
         }
     }
 
@@ -53,6 +74,9 @@ function parseExpression(expr) {
     for (let token of output) {
         if (typeof token === 'number') {
             stack.push(token);
+        } else if (['sin', 'cos', 'tan'].includes(token)) {
+            let value = stack.pop();
+            stack.push(evaluateFunction(token, value));
         } else {
             let b = stack.pop();
             let a = stack.pop();
