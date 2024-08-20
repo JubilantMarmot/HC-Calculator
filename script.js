@@ -1,3 +1,5 @@
+let memory = 0;
+
 function appendToDisplay(value) {
     let display = document.getElementById('display');
     display.value += value;
@@ -18,8 +20,26 @@ function calculate() {
     }
 }
 
+function storeMemory() {
+    let display = document.getElementById('display');
+    try {
+        memory = parseExpression(display.value);
+    } catch (e) {
+        alert('Invalid expression. Cannot store in memory.');
+    }
+}
+
+function recallMemory() {
+    let display = document.getElementById('display');
+    display.value += memory;
+}
+
+function clearMemory() {
+    memory = 0;
+}
+
 function parseExpression(expr) {
-    let tokens = expr.match(/[\d\.]+|[+\-*/()^]|sin|cos|tan|sqrt/g);
+    let tokens = expr.match(/[\d\.]+|[+\-*/()^]|sin|cos|tan|sqrt|log|exp|%/g);
     let output = [];
     let operators = [];
     const precedence = {'+': 1, '-': 1, '*': 2, '/': 2, '^': 3};
@@ -40,6 +60,9 @@ function parseExpression(expr) {
             case 'cos': return Math.cos(value);
             case 'tan': return Math.tan(value);
             case 'sqrt': return Math.sqrt(value);
+            case 'log': return Math.log(value);
+            case 'exp': return Math.exp(value);
+            case '%': return value / 100;
         }
     }
 
@@ -51,7 +74,7 @@ function parseExpression(expr) {
                 output.push(operators.pop());
             }
             operators.push(token);
-        } else if (['sin', 'cos', 'tan', 'sqrt'].includes(token)) {
+        } else if (['sin', 'cos', 'tan', 'sqrt', 'log', 'exp', '%'].includes(token)) {
             operators.push(token);
         } else if (token === '(') {
             operators.push(token);
@@ -60,7 +83,7 @@ function parseExpression(expr) {
                 output.push(operators.pop());
             }
             operators.pop();
-            if (operators.length && ['sin', 'cos', 'tan', 'sqrt'].includes(operators[operators.length - 1])) {
+            if (operators.length && ['sin', 'cos', 'tan', 'sqrt', 'log', 'exp'].includes(operators[operators.length - 1])) {
                 output.push(operators.pop());
             }
         }
@@ -74,7 +97,7 @@ function parseExpression(expr) {
     for (let token of output) {
         if (typeof token === 'number') {
             stack.push(token);
-        } else if (['sin', 'cos', 'tan', 'sqrt'].includes(token)) {
+        } else if (['sin', 'cos', 'tan', 'sqrt', 'log', 'exp', '%'].includes(token)) {
             let value = stack.pop();
             stack.push(evaluateFunction(token, value));
         } else {
