@@ -19,7 +19,7 @@ function calculate() {
 }
 
 function parseExpression(expr) {
-    let tokens = expr.match(/[\d\.]+|[+\-*/()^]|sin|cos|tan/g);
+    let tokens = expr.match(/[\d\.]+|[+\-*/()^]|sin|cos|tan|sqrt/g);
     let output = [];
     let operators = [];
     const precedence = {'+': 1, '-': 1, '*': 2, '/': 2, '^': 3};
@@ -39,6 +39,7 @@ function parseExpression(expr) {
             case 'sin': return Math.sin(value);
             case 'cos': return Math.cos(value);
             case 'tan': return Math.tan(value);
+            case 'sqrt': return Math.sqrt(value);
         }
     }
 
@@ -50,7 +51,7 @@ function parseExpression(expr) {
                 output.push(operators.pop());
             }
             operators.push(token);
-        } else if (['sin', 'cos', 'tan'].includes(token)) {
+        } else if (['sin', 'cos', 'tan', 'sqrt'].includes(token)) {
             operators.push(token);
         } else if (token === '(') {
             operators.push(token);
@@ -59,7 +60,7 @@ function parseExpression(expr) {
                 output.push(operators.pop());
             }
             operators.pop();
-            if (operators.length && ['sin', 'cos', 'tan'].includes(operators[operators.length - 1])) {
+            if (operators.length && ['sin', 'cos', 'tan', 'sqrt'].includes(operators[operators.length - 1])) {
                 output.push(operators.pop());
             }
         }
@@ -73,7 +74,7 @@ function parseExpression(expr) {
     for (let token of output) {
         if (typeof token === 'number') {
             stack.push(token);
-        } else if (['sin', 'cos', 'tan'].includes(token)) {
+        } else if (['sin', 'cos', 'tan', 'sqrt'].includes(token)) {
             let value = stack.pop();
             stack.push(evaluateFunction(token, value));
         } else {
