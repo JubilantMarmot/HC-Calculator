@@ -4,6 +4,12 @@ This is a really featureful and powerful calculator application.
 
 you can try it [here](http://htmlpreview.github.io/?https://github.com/JubilantMarmot/HC-Calculator/blob/master/index.html))!
 
+## Images
+
+![](./1.png)
+![](./2.png)
+![](./3.png)
+
 ## Math
 
 - **Basic ones**: Addition, subtraction, multiplication, division.
